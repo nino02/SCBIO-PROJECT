@@ -13,7 +13,7 @@ class AvatarWindow(QDialog):
 
         # Etiqueta para el avatar
         avatar_label = QLabel(self)
-        pixmap = QPixmap('avatares\\avatar.png')  # Ajusta la ruta de la imagen según la ubicación de tu archivo de avatar
+        pixmap = QPixmap('avatares\\avatar2.png')  # Ajusta la ruta de la imagen según la ubicación de tu archivo de avatar
         avatar_label.setPixmap(pixmap)
         layout.addWidget(avatar_label)
 
@@ -63,6 +63,7 @@ class TimeSelector(QWidget):
         self.setLayout(layout)
 
     def show_avatar_window(self):
+        self.hide()
         self.avatar_window = AvatarWindow()
         self.avatar_window.exec_()
 
@@ -70,6 +71,7 @@ class TimeSelector(QWidget):
         hour = self.hour_edit.time().toString("HH")
         minute = self.minute_edit.time().toString("mm")
         print("Tiempo objetivo seleccionado:", hour + ":" + minute)
+    
 
 
 if __name__ == '__main__':
