@@ -106,6 +106,10 @@ class AvatarWindow:
         # Enlazar evento de doble clic al avatar
         self.avatar_label.bind("<Double-Button-1>", self.open_close_window)
 
+        # Enlazar eventos de ratón
+        self.avatar_label.bind("<Enter>", self.on_enter)
+        self.avatar_label.bind("<Leave>", self.on_leave)
+
     def timer(self):
         tiempo_rep = self.time_s/self.levels
         print(f"Temporizador: {self.current_level} {self.time_s} {tiempo_rep}")
@@ -157,6 +161,13 @@ class AvatarWindow:
     def close_program(self):
         self.root.destroy()  # Cierra la ventana principal y termina el programa
         
+    def on_enter(self, event):
+        # Crear una ventana semi-transparente que cubra la ventana del avatar
+        self.root.attributes('-alpha', 0.4)
+
+    def on_leave(self, event):
+        # Eliminar la ventana semi-transparente cuando el ratón sale
+        self.root.attributes('-alpha', 1)
 
     def run(self):
         self.root.mainloop()
