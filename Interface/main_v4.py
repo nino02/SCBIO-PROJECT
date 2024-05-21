@@ -144,7 +144,7 @@ def eyedetection():
                     object_durations[eye_label] += current_time - previous_time
 
         # Display the image
-        #cv2.imshow('MediaPipe Face, Eye Detection and YOLOv3 Object Detection', image)
+        cv2.imshow('MediaPipe Face, Eye Detection and YOLOv3 Object Detection', image)
         if cv2.waitKey(5) & 0xFF == 27:
             break
 
@@ -200,9 +200,6 @@ class AvatarWindow(QWidget):
         layout.addWidget(self.avatar_label)
         self.setLayout(layout)
 
-        # Iniciar la animación del avatar
-        self.timer_bucle()
-
         # Enlazar eventos de ratón
         self.enterEvent = self.on_enter
         self.leaveEvent = self.on_leave
@@ -220,6 +217,9 @@ class AvatarWindow(QWidget):
         self.eye_timer = QTimer(self)
         self.eye_timer.timeout.connect(self.start_eye_detection)
         self.eye_timer.start(60000)  # Ejecutar cada 1 minuto
+
+        # Iniciar la animación del avatar
+        self.timer_bucle()
 
     def on_doubleclic(self, event):
         
@@ -290,6 +290,8 @@ class AvatarWindow(QWidget):
         #self.timerId = self.startTimer(int(tiempo_rep) * 1000)
 
     def premio(self):
+        if self.person == 0:
+            return True
         premio = (self.tiempo_rep/(max(self.eye_left,self.eye_right)-self.handy)) > 0.7
         self.eye_left = 0
         self.eye_right = 0
