@@ -52,7 +52,7 @@ def eyedetection():
     start_time = time.time()
     previous_time = start_time
 
-    while cap.isOpened() and time.time() - start_time < 60:
+    while cap.isOpened() and time.time() - start_time < 120:
         ret, frame = cap.read()
         if not ret:
             continue
@@ -144,7 +144,7 @@ def eyedetection():
                     object_durations[eye_label] += current_time - previous_time
 
         # Display the image
-        cv2.imshow('MediaPipe Face, Eye Detection and YOLOv3 Object Detection', image)
+        #cv2.imshow('MediaPipe Face, Eye Detection and YOLOv3 Object Detection', image)
         if cv2.waitKey(5) & 0xFF == 27:
             break
 
@@ -184,8 +184,15 @@ class AvatarWindow(QWidget):
         self.levels = 4
         self.current_level = 0
 
+        #Labels para camara
+        self.eye_left = 0
+        self.eye_right = 0
+        self.person = 0
+        self.handy = 0
+        
+
         # Cargar las imágenes del avatar
-        self.avatar_images = [f"avatares/avatar{i}.gif" for i in range(1, 3)]  # Cambia "avatar" por la ruta de tus imágenes
+        self.avatar_images = [f"Interface/avatares/avatar_{i}.gif" for i in range(1, 5)]  # Cambia "avatar" por la ruta de tus imágenes
         self.avatar_label = QLabel()
 
         # Crear un layout vertical y agregar widgets
@@ -204,8 +211,8 @@ class AvatarWindow(QWidget):
         # Iniciar el temporizador
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.timer_bucle)
-        tiempo_rep = self.time_s // self.levels
-        self.timer.start(tiempo_rep*1000)
+        self.tiempo_rep = self.time_s // self.levels
+        self.timer.start(self.tiempo_rep*1000)
 
         # Iniciar el temporizador para la detección de ojos
         self.start_eye_detection()
@@ -283,7 +290,12 @@ class AvatarWindow(QWidget):
         #self.timerId = self.startTimer(int(tiempo_rep) * 1000)
 
     def premio(self):
-        return True
+        premio = (self.tiempo_rep/(max(self.eye_left,self.eye_right)-self.handy)) > 0.7
+        self.eye_left = 0
+        self.eye_right = 0
+        self.person = 0
+        self.handy = 0
+        return premio
 
     def change_avatar(self, level):
         avatar_image_path = self.avatar_images[level]
@@ -312,7 +324,11 @@ class AvatarWindow(QWidget):
         self.eye_thread.start()
 
     def handle_eye_detection_result(self, result):
-        print("Detección de ojos:", result)
+        self.eye_left += result['left eye']
+        self.eye_right += result['rigth eye']
+        self.person += result['person']
+        self.handy += result['cell phone']
+        
         # Aquí puedes hacer algo con los resultados, como mostrarlos en la interfaz o guardarlos en un archivo
 
 class TimeSelector(QWidget):
