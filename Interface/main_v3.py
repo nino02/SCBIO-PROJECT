@@ -185,7 +185,7 @@ class AvatarWindow(QWidget):
         self.current_level = 0
 
         # Cargar las imágenes del avatar
-        self.avatar_images = [f"avatares/avatar{i}.gif" for i in range(1, 3)]  # Cambia "avatar" por la ruta de tus imágenes
+        self.avatar_images = [f"Interface/avatares/avatar_{i}.gif" for i in range(1, 5)]  # Cambia "avatar" por la ruta de tus imágenes
         self.avatar_label = QLabel()
 
         # Crear un layout vertical y agregar widgets
