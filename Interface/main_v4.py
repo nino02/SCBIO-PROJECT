@@ -182,7 +182,7 @@ class AvatarWindow(QWidget):
 
         # Configuración de número de niveles
         self.levels = 4
-        self.current_level = 0
+        self.current_level = 1
 
         #Labels para camara
         self.eye_left = 0
@@ -219,7 +219,7 @@ class AvatarWindow(QWidget):
         self.eye_timer.start(60000)  # Ejecutar cada 1 minuto
 
         # Iniciar la animación del avatar
-        self.timer_bucle()
+        self.change_avatar(self.current_level)
 
     def on_doubleclic(self, event):
         
@@ -234,8 +234,8 @@ class AvatarWindow(QWidget):
 
         # Crear la gráfica circular
         fig, ax = plt.subplots()
-        labels = ['A', 'B', 'C', 'D']
-        sizes = [15, 30, 45, 10]
+        labels = ['A', 'Distraido']
+        sizes = [max(self.eye_left,self.eye_right), (max(self.eye_left,self.eye_right)-self.handy)]
         ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
         ax.axis('equal')
         canvas = FigureCanvas(fig)
@@ -280,7 +280,7 @@ class AvatarWindow(QWidget):
                 self.current_level += 1
                 
         else:
-            if self.current_level == 1:
+            if self.current_level == 0:
                 None
             else:
                 self.current_level -= 1
@@ -291,8 +291,12 @@ class AvatarWindow(QWidget):
 
     def premio(self):
         if self.person == 0:
-            return True
-        premio = (self.tiempo_rep/(max(self.eye_left,self.eye_right)-self.handy)) > 0.7
+            return False
+        print(max(self.eye_left,self.eye_right))
+        print(self.handy)
+        print(self.tiempo_rep)
+
+        premio = ((max(self.eye_left,self.eye_right)-self.handy)/self.tiempo_rep) > 0.7
         self.eye_left = 0
         self.eye_right = 0
         self.person = 0
@@ -326,10 +330,11 @@ class AvatarWindow(QWidget):
         self.eye_thread.start()
 
     def handle_eye_detection_result(self, result):
-        self.eye_left += result['left eye']
-        self.eye_right += result['rigth eye']
-        self.person += result['person']
-        self.handy += result['cell phone']
+        self.eye_left += result.get('left eye', 0)
+        self.eye_right += result.get('right eye', 0)
+        self.person += result.get('person', 0)
+        self.handy += result.get('cell phone', 0)
+
         
         # Aquí puedes hacer algo con los resultados, como mostrarlos en la interfaz o guardarlos en un archivo
 
