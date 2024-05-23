@@ -1,6 +1,6 @@
 import sys
 import pyautogui
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QWidget, QVBoxLayout, QHBoxLayout, QTimeEdit, QDialog,QLCDNumber
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QWidget, QVBoxLayout, QHBoxLayout, QTimeEdit, QDialog,QLCDNumber,QGridLayout
 from PyQt5.QtGui import QPixmap, QIcon, QMovie
 from PyQt5.QtCore import Qt, QTimer, QSize, QTime, QThread, pyqtSignal 
 import numpy as np
@@ -52,6 +52,7 @@ def eyedetection():
     start_time = time.time()
     previous_time = start_time
 
+    frame_counter = 0
     while cap.isOpened() and time.time() - start_time < 120:
         ret, frame = cap.read()
         if not ret:
@@ -61,6 +62,13 @@ def eyedetection():
 
         # Convert color from BGR to RGB
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        frame_counter += 1
+
+        # Skip processing for every other frame
+        if frame_counter % 30 != 1:
+            continue
+
 
         # Perform face detection
         results = face_detection.process(image)
@@ -211,8 +219,9 @@ class AvatarWindow(QWidget):
         self.tiempo_rep = self.time_s // self.levels
         self.timer.start(self.tiempo_rep*1000)
 
-        # Iniciar el temporizador para la detección de ojos
+        # Iniciar la detección de ojos
         self.start_eye_detection()
+
         # Iniciar el temporizador para la detección de ojos
         self.eye_timer = QTimer(self)
         self.eye_timer.timeout.connect(self.start_eye_detection)
@@ -222,21 +231,24 @@ class AvatarWindow(QWidget):
         self.change_avatar(self.current_level)
 
     def on_doubleclic(self, event):
-        
         # Crear la ventana de diálogo
         dialog = QDialog(self)
-        dialog.setWindowTitle("Gráfica Circular de Prueba")
+        dialog.setWindowTitle("Dashboard")
 
         # Crear el widget QLCDNumber para mostrar la hora
         lcd = QLCDNumber()
         lcd.setDigitCount(8)  # Establecer el número de dígitos para mostrar la hora
         lcd.setSegmentStyle(QLCDNumber.Flat)  # Establecer el estilo del segmento LCD
+        lcd.setFixedHeight(100)  # Establecer una altura más alta para el QLCDNumber
 
         # Crear la gráfica circular
         fig, ax = plt.subplots()
-        labels = ['A', 'Distraido']
-        sizes = [max(self.eye_left,self.eye_right), (max(self.eye_left,self.eye_right)-self.handy)]
-        ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+        labels = ['Concentrado', 'Sin mirar', 'Con el móvil', 'Comiendo']
+        sizes = [0.73,0.07,0.15,0.05]
+        # sizes = [max(self.eye_left,self.eye_right), (max(self.eye_left,self.eye_right)-self.handy)]
+        # Aumentar el tamaño de la fuente en el gráfico
+        
+        ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, textprops={'fontsize': 18})
         ax.axis('equal')
         canvas = FigureCanvas(fig)
 
@@ -246,21 +258,34 @@ class AvatarWindow(QWidget):
         button_cerrar.clicked.connect(QApplication.quit)
         button2.clicked.connect(lambda: print("Botón 2 presionado"))
 
-        # Crear el texto de ejemplo
-        message_label = QLabel("Este es un texto de ejemplo.")
-
         # Crear el layout de la ventana de diálogo
-        layout = QVBoxLayout()
-        layout.addWidget(lcd)  # Agregar el QLCDNumber
-        layout.addWidget(canvas)
-        layout.addWidget(button_cerrar)
-        layout.addWidget(button2)
-        layout.addWidget(message_label)
+        layout = QGridLayout()
+        layout.addWidget(lcd, 0, 0, 1, 2)  # Agregar el QLCDNumber
+        layout.addWidget(canvas, 1, 0, 1, 2)  # Agregar el gráfico
+        layout.addWidget(button_cerrar, 2, 1)  # Agregar el botón de cerrar
+        layout.addWidget(button2, 2, 0)  # Agregar el botón 2
         dialog.setLayout(layout)
 
         # Crear un temporizador para actualizar la hora cada segundo
         timer = QTimer(dialog)
-        timer.timeout.connect(lambda: lcd.display(QTime.currentTime().toString("hh:mm:ss")))
+
+        
+
+        def seconds_to_hhmmss():
+            self.time_crr -= 1
+            seconds = self.time_crr
+            hours = seconds // 3600
+            minutes = (seconds % 3600) // 60
+            seconds = seconds % 60
+            lcd.display(f"{hours:02}:{minutes:02}:{seconds:02}")
+
+        self.time_crr = self.time_s
+        timer.timeout.connect(seconds_to_hhmmss)
+        seconds = self.time_s
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+        lcd.display(f"{hours:02}:{minutes:02}:{seconds:02}")
         timer.start(1000)  # Actualizar cada 1000 ms (1 segundo)
 
         # Mostrar la ventana de diálogo
@@ -268,6 +293,20 @@ class AvatarWindow(QWidget):
 
         # Cerrar la gráfica al cerrar la ventana de diálogo
         plt.close(fig)
+
+        # Obtener el tamaño de la pantalla y de la ventana
+        screen_width, screen_height = pyautogui.size()
+        dialog_size = dialog.size()
+        window_width = dialog_size.width()
+        window_height = dialog_size.height()
+
+        # Calcular las coordenadas para la esquina inferior izquierda
+        x = screen_width - window_width
+        y = screen_height - window_height
+
+        # Mover la ventana a las coordenadas calculadas
+        dialog.move(x, y)
+
 
 
     def timer_bucle(self):
