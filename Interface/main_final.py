@@ -520,6 +520,25 @@ class TimeSelector(QWidget):
 
 
 if __name__ == '__main__':
+    # Lista de paquetes necesarios
+    required_packages = ['pyautogui', 'numpy', 'opencv-python', 'mediapipe', 'PyQt5', 'matplotlib']
+
+    # Intenta importar cada paquete y muestra un mensaje de error si no está instalado
+    for package in required_packages:
+        try:
+            __import__(package)
+        except ImportError:
+            print(f"{package} no está instalado. Instalando...")
+            try:
+                if package == 'opencv-python':
+                    import subprocess
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
+                else:
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+                print(f"{package} instalado correctamente.")
+            except subprocess.CalledProcessError as e:
+                print(f"Error al instalar {package}: {e}")
+                
     app = QApplication(sys.argv)
     window = TimeSelector()
     window.show()
