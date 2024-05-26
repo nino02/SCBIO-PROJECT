@@ -1,4 +1,18 @@
 # SCBIO PROJECT
+## Funcionamiento de la Aplicación
+
+La aplicación consiste en un avatar que aparece en la esquina inferior derecha de la pantalla. Este avatar aumenta de nivel agregándole prendas o mejorando su apariencia, y disminuye de nivel haciéndolo menos atractivo. El nivel del avatar se determina según el grado de concentración del usuario.
+
+1. **Selección del Tiempo de Concentración**: El usuario selecciona un tiempo estimado en el que espera estar concentrado. Este tiempo se divide en cuatro niveles, representados por las piezas que conforman la apariencia del avatar.
+
+2. **Control de Niveles**: La aplicación monitorea constantemente la atención del usuario. Si el usuario mantiene un alto nivel de concentración, el avatar sube de nivel, añadiendo prendas o mejorando su aspecto. Por el contrario, si la concentración disminuye, el avatar baja de nivel.
+
+3. **Detección de Ojos**: La función de detección de ojos graba la cara del usuario y calcula el tiempo que ha estado mirando la pantalla. Esto se hace en intervalos regulares y los resultados se envían cada ciertos minutos para permitir un seguimiento preciso del tiempo de atención del usuario.
+
+4. **Seguimiento del Progreso**: La aplicación permite al usuario realizar un seguimiento de su progreso a lo largo del tiempo, mostrando estadísticas sobre su nivel de concentración, distracciones y hábitos alimenticios en una ventana de Dashboard.
+
+Este funcionamiento básico de la aplicación proporciona al usuario una herramienta para mejorar su atención y productividad, al tiempo que le permite mantener un registro de su rendimiento a lo largo del tiempo.
+
 ## Documentación del Código
 
 ### Resumen
