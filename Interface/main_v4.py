@@ -373,6 +373,7 @@ class AvatarWindow(QWidget):
         self.eye_right += result.get('right eye', 0)
         self.person += result.get('person', 0)
         self.handy += result.get('cell phone', 0)
+        self.food += result.get('banana',0)
 
         
         # Aquí puedes hacer algo con los resultados, como mostrarlos en la interfaz o guardarlos en un archivo
