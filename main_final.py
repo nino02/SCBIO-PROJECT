@@ -87,7 +87,7 @@ class AvatarWindow(QWidget):
         # Iniciar el temporizador para la detección de ojos
         self.eye_timer = QTimer(self)
         self.eye_timer.timeout.connect(self.start_eye_detection)
-        self.eye_timer.start(300000)  # Ejecutar cada 5 minutos
+        self.eye_timer.start(30000)  # Para el test ponemos 30 segundos lo recomendable seria subir el tiempo.
 
         # Iniciar la animación del avatar
         self.change_avatar(self.current_level)
@@ -300,6 +300,7 @@ class AvatarWindow(QWidget):
             self.detection_thread.daemon = True  # Opcional: permite que el hilo se cierre cuando se cierre el programa principal
             self.detection_thread.start()
             self.flag_pause = False
+
         else:
             self.button2.setText("Resume")
             self.timer.stop()
@@ -311,6 +312,7 @@ class AvatarWindow(QWidget):
             self.cap.release()
             print("Thread stopped")
             self.flag_pause = True
+            
 
     def eyedetection(self):
         # MediaPipe Face Detection initialization
