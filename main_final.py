@@ -114,7 +114,7 @@ class AvatarWindow(QWidget):
         #Se otorga un premio o en otras palabras se consigue un nuevo nivel si la 'concentracion' entendida como estar mirando
         #la pantalla supera el 70% del tiempo
 
-        premio = ((max(self.eye_left,self.eye_right)-self.distraction)/self.tiempo_rep) > 0.7
+        premio = ((self.eye_right-self.distraction)/self.tiempo_rep) > 0.7
 
         self.eye_left = 0
         self.eye_right = 0
